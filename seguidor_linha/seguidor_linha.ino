@@ -24,13 +24,14 @@ int PinEcho = 2;     // pino usado para ler a saida do sensor
 float TempoEcho = 0;
 const float VelocidadeSom_mpors = 340;        // em metros por segundo
 const float VelocidadeSom_mporus = 0.000340;  // em metros por microsegundo
-float DistanciaUltra = 0;
+float DistanciaUltra = 0.0;
 
 // Velocidade padrão dos motores
-const int VelPadrao = 100;
-const int VelCurva = 130;
+const int v_Padrao = 100;
 
-int Dir = 0;
+// Velocidade padrão para curvas
+const int v_CurvaF = 100;  // Frente
+const int v_CurvaT = 160;  // Tras
 
 void setup() {
   // Pinos sensores infravermelhos
@@ -39,7 +40,7 @@ void setup() {
   pinMode(pin_S3, INPUT);
   pinMode(pin_S4, INPUT);
 
-  // Pinos sensor Ultrassonico
+  // Pinos sensor Ultrassônico
   // Configura pino de Trigger como saída e inicializa com nível baixo
   pinMode(PinTrigger, OUTPUT);
   digitalWrite(PinTrigger, LOW);
@@ -51,59 +52,37 @@ void setup() {
   pinMode(dir1, OUTPUT);
   pinMode(dir2, OUTPUT);
   LerUltra();
-
-  Serial.begin(9600);
 }
 
 void loop() {
-  //PrintInfras();
-  /* 
-  Frente1(100);
-  Frente2(100);
-  delay(5000);
-
-
-  Esquerda();
-  delay(5000);
-
-  Direita();
-  delay(5000);
-*/
 
   LerUltra();
 
   if (DistanciaUltra <= 15.0) {
-    //Serial.println("Objeto encontrado!\n");
+    // Ultrassônico "detectou" um objeto a 15cm de distancia
     Desvia();
-    //Parar();
-    //PrintUltra();
   }
 
   LerInfras();
 
   if (SensorEsq) {
     Esquerda();
-    delay(100);
   } else if (SensorDir) {
     Direita();
-    delay(100);
   } else {
-    Frente1(VelPadrao);
-    Frente2(VelPadrao);
-    delay(100);
+    Frente1(v_Padrao);
+    Frente2(v_Padrao);
   }
 
-  //delay(100);
+  delay(100);
 }
 
 /* --- Funções dos sensores Infravermelho ---*/
 void LerInfras() {
   Sensor1 = digitalRead(pin_S1);
-  //Sensor2 = digitalRead(pin_S2);
+  Sensor2 = digitalRead(pin_S2);
   Sensor3 = digitalRead(pin_S3);
   Sensor4 = digitalRead(pin_S4);
-
-  Sensor2 = 0;
 
   if (Sensor3 || Sensor4)  // Identificou na esquerda
     SensorEsq = true;
@@ -128,9 +107,9 @@ void PrintInfras() {
   Serial.println("\n");
 }
 
-/* --------------- Funções do sensor Ultrassonico ---------------*/
+/* --------------- Funções do sensor Ultrassônico ---------------*/
 void DisparaPulsoUltrassonico() {
-  // Para fazer o HC-SR04 enviar um pulso ultrassonico, nos temos
+  // Para fazer o HC-SR04 enviar um pulso Ultrassônico, nos temos
   // que enviar para o pino de trigger um sinal de nivel alto
   // com pelo menos 10us de duraçao
   digitalWrite(PinTrigger, HIGH);
@@ -183,38 +162,38 @@ void Parar() {  // Parar ambos os motores
 }
 
 void Esquerda() {
-  Frente2(100);
-  Tras1(160);
+  Frente2(v_CurvaF);
+  Tras1(v_CurvaT);
 }
 
 void Direita() {
-  Frente1(100);
-  Tras2(160);
+  Frente1(v_CurvaF);
+  Tras2(v_CurvaT);
 }
 
 void Desvia() {
-  Tras1(VelPadrao);
-  Tras2(VelPadrao);
+  Tras1(v_Padrao);
+  Tras2(v_Padrao);
   delay(1000);
 
   Direita();
   delay(1000);
 
-  Frente1(VelPadrao);
-  Frente2(VelPadrao);
+  Frente1(v_Padrao);
+  Frente2(v_Padrao);
   delay(2000);
 
   Esquerda();
   delay(1000);
 
-  Frente1(VelPadrao);
-  Frente2(VelPadrao);
+  Frente1(v_Padrao);
+  Frente2(v_Padrao);
   delay(2000);
 
   Esquerda();
   delay(1000);
 
-  Frente1(VelPadrao);
-  Frente2(VelPadrao);
+  Frente1(v_Padrao);
+  Frente2(v_Padrao);
   delay(500);
 }
