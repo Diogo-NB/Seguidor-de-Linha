@@ -5,18 +5,13 @@
 #define dir2 10  // Pino Motor Esquerda/Direita Porta IN3 ponte H
 
 // Infravermelho
-#define pin_S1 13
-#define pin_S2 12
-#define pin_S3 8
-#define pin_S4 7
-
-bool Sensor1 = 0;
-bool Sensor2 = 0;
-bool Sensor3 = 0;
-bool Sensor4 = 0;
+#define pin_S1 13  //Esq
+#define pin_S2 12  //Dir
+#define pin_S3 8   //Mid
 
 bool SensorEsq = 0;
 bool SensorDir = 0;
+bool SensorMid = 0;
 
 // Ultrassonico
 int PinTrigger = 3;  // Pino usado para disparar os pulsos do sensor
@@ -33,12 +28,13 @@ const int v_Padrao = 100;
 const int v_CurvaF = 100;  // Frente
 const int v_CurvaT = 160;  // Tras
 
+int status = 0; // 0 - Parado; 1 - Frente; 2 - Esquerda; 3 - Direita
+
 void setup() {
   // Pinos sensores infravermelhos
   pinMode(pin_S1, INPUT);
   pinMode(pin_S2, INPUT);
   pinMode(pin_S3, INPUT);
-  pinMode(pin_S4, INPUT);
 
   // Pinos sensor Ultrassônico
   // Configura pino de Trigger como saída e inicializa com nível baixo
@@ -65,46 +61,21 @@ void loop() {
 
   LerInfras();
 
-  if (SensorEsq) {
-    Esquerda();
-  } else if (SensorDir) {
+  if (SensorMid)
+    Frente();
+  else if (SensorDir)
     Direita();
-  } else {
-    Frente1(v_Padrao);
-    Frente2(v_Padrao);
-  }
-
+  else if (SensorEsq)
+    Esquerda();
+ 
   delay(100);
 }
 
 /* --- Funções dos sensores Infravermelho ---*/
 void LerInfras() {
-  Sensor1 = digitalRead(pin_S1);
-  Sensor2 = digitalRead(pin_S2);
-  Sensor3 = digitalRead(pin_S3);
-  Sensor4 = digitalRead(pin_S4);
-
-  if (Sensor3 || Sensor4)  // Identificou na esquerda
-    SensorEsq = true;
-  else
-    SensorEsq = false;
-
-  if (Sensor2 || Sensor1)  // Identificou na direita
-    SensorDir = true;
-  else
-    SensorDir = false;
-}
-
-void PrintInfras() {
-  Serial.print("Sensor 1: ");
-  Serial.println(Sensor1);
-  Serial.print("Sensor 2: ");
-  Serial.println(Sensor2);
-  Serial.print("Sensor 3: ");
-  Serial.println(Sensor3);
-  Serial.print("Sensor 4: ");
-  Serial.println(Sensor4);
-  Serial.println("\n");
+  SensorEsq = digitalRead(pin_S1);
+  SensorDir = digitalRead(pin_S2);
+  SensorMid = digitalRead(pin_S3);
 }
 
 /* --------------- Funções do sensor Ultrassônico ---------------*/
@@ -162,13 +133,30 @@ void Parar() {  // Parar ambos os motores
 }
 
 void Esquerda() {
-  Frente2(v_CurvaF);
-  Tras1(v_CurvaT);
+  if (status != 2)
+  {
+    Frente2(v_CurvaF);
+    Tras1(v_CurvaT);
+    status = 2;
+  }
 }
 
 void Direita() {
-  Frente1(v_CurvaF);
-  Tras2(v_CurvaT);
+  if (status != 3)
+  {
+    Frente1(v_CurvaF);
+    Tras2(v_CurvaT);
+    status = 3;
+  }
+}
+
+void Frente() {
+  if (status != 1) // Se não já estava indo pra frente
+  {
+    Frente1(v_Padrao);
+    Frente2(v_Padrao);
+    status = 1;
+  }
 }
 
 void Desvia() {
@@ -196,4 +184,46 @@ void Desvia() {
   Frente1(v_Padrao);
   Frente2(v_Padrao);
   delay(500);
+}
+
+void procurar()
+{
+  int count = 0;
+  bool aux = true;
+
+  while (!SensorDir && !SensorDir && !SensorMid)
+  {
+    if (count >= 3)
+    {
+      if (aux)
+      {
+        Direita();
+        aux = false;
+      }
+      else
+      {
+        Esquerda();
+        aux = true;
+      }
+      count = 0;
+    }
+
+    LerInfras();
+    delay(100);
+  }
+
+  if (SensorMid)
+  {
+    Frente();
+  }
+  else if (SensorDir)
+  {
+    Direita();
+    delay(100);
+  }
+  else
+  {
+    Esquerda();
+    delay(100);
+  }
 }
