@@ -61,12 +61,15 @@ void loop() {
 
   LerInfras();
 
-  if (SensorMid)
-    Frente();
-  else if (SensorDir)
+  if (SensorDir)
     Direita();
   else if (SensorEsq)
     Esquerda();
+  else if (SensorMid)
+    Frente();
+  else {
+    Frente();
+  }
 
   delay(100);
 }
@@ -126,10 +129,14 @@ void Tras2(int velocidade) {
 }
 
 void Parar() {  // Parar ambos os motores
-  digitalWrite(M1, LOW);
-  digitalWrite(dir1, LOW);
-  digitalWrite(M2, LOW);
-  digitalWrite(dir2, LOW);
+
+  if (status != 0) {
+    digitalWrite(M1, LOW);
+    digitalWrite(dir1, LOW);
+    digitalWrite(M2, LOW);
+    digitalWrite(dir2, LOW);
+    status = 0;
+  }
 }
 
 void Esquerda() {
