@@ -5,9 +5,9 @@
 #define dir2 10  // Pino Motor Esquerda/Direita Porta IN3 ponte H
 
 // Infravermelho
-#define pin_S1 13  //Esq
-#define pin_S2 12  //Dir
-#define pin_S3 8   //Mid
+#define pin_S1 13  // Mid
+#define pin_S2 12  // Dir
+#define pin_S3 8   // Esq
 
 bool SensorEsq = 0;
 bool SensorDir = 0;
@@ -28,7 +28,7 @@ const int v_Padrao = 100;
 const int v_CurvaF = 100;  // Frente
 const int v_CurvaT = 160;  // Tras
 
-int status = 0; // 0 - Parado; 1 - Frente; 2 - Esquerda; 3 - Direita
+int status = 0;  // 0 - Parado; 1 - Frente; 2 - Esquerda; 3 - Direita
 
 void setup() {
   // Pinos sensores infravermelhos
@@ -67,15 +67,15 @@ void loop() {
     Direita();
   else if (SensorEsq)
     Esquerda();
- 
+
   delay(100);
 }
 
 /* --- Funções dos sensores Infravermelho ---*/
 void LerInfras() {
-  SensorEsq = digitalRead(pin_S1);
+  SensorEsq = digitalRead(pin_S3);
   SensorDir = digitalRead(pin_S2);
-  SensorMid = digitalRead(pin_S3);
+  SensorMid = digitalRead(pin_S1);
 }
 
 /* --------------- Funções do sensor Ultrassônico ---------------*/
@@ -133,8 +133,7 @@ void Parar() {  // Parar ambos os motores
 }
 
 void Esquerda() {
-  if (status != 2)
-  {
+  if (status != 2) {
     Frente2(v_CurvaF);
     Tras1(v_CurvaT);
     status = 2;
@@ -142,8 +141,7 @@ void Esquerda() {
 }
 
 void Direita() {
-  if (status != 3)
-  {
+  if (status != 3) {
     Frente1(v_CurvaF);
     Tras2(v_CurvaT);
     status = 3;
@@ -151,7 +149,7 @@ void Direita() {
 }
 
 void Frente() {
-  if (status != 1) // Se não já estava indo pra frente
+  if (status != 1)  // Se não já estava indo pra frente
   {
     Frente1(v_Padrao);
     Frente2(v_Padrao);
@@ -186,22 +184,16 @@ void Desvia() {
   delay(500);
 }
 
-void procurar()
-{
+void procurar() {
   int count = 0;
   bool aux = true;
 
-  while (!SensorDir && !SensorDir && !SensorMid)
-  {
-    if (count >= 3)
-    {
-      if (aux)
-      {
+  while (!SensorDir && !SensorDir && !SensorMid) {
+    if (count >= 3) {
+      if (aux) {
         Direita();
         aux = false;
-      }
-      else
-      {
+      } else {
         Esquerda();
         aux = true;
       }
@@ -212,17 +204,12 @@ void procurar()
     delay(100);
   }
 
-  if (SensorMid)
-  {
+  if (SensorMid) {
     Frente();
-  }
-  else if (SensorDir)
-  {
+  } else if (SensorDir) {
     Direita();
     delay(100);
-  }
-  else
-  {
+  } else {
     Esquerda();
     delay(100);
   }
