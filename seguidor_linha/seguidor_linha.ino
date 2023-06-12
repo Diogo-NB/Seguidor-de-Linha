@@ -172,52 +172,20 @@ void Desvia() {
   Direita();
   delay(1000);
 
-  Frente1(v_Padrao);
-  Frente2(v_Padrao);
+  Frente();
   delay(2000);
 
   Esquerda();
   delay(1000);
 
-  Frente1(v_Padrao);
-  Frente2(v_Padrao);
+  Frente();
   delay(2000);
 
   Esquerda();
   delay(1000);
 
-  Frente1(v_Padrao);
-  Frente2(v_Padrao);
+  Frente();
   delay(500);
 }
 
-void procurar() {
-  int count = 0;
-  bool aux = true;
 
-  while (!SensorDir && !SensorDir && !SensorMid) {
-    if (count >= 3) {
-      if (aux) {
-        Direita();
-        aux = false;
-      } else {
-        Esquerda();
-        aux = true;
-      }
-      count = 0;
-    }
-
-    LerInfras();
-    delay(100);
-  }
-
-  if (SensorMid) {
-    Frente();
-  } else if (SensorDir) {
-    Direita();
-    delay(100);
-  } else {
-    Esquerda();
-    delay(100);
-  }
-}
