@@ -167,7 +167,7 @@ void Frente() {
 void Desvia() {
   Tras1(v_Padrao);
   Tras2(v_Padrao);
-  delay(1000);
+  delay(500);
 
   Direita();
   delay(1000);
@@ -176,13 +176,13 @@ void Desvia() {
   delay(2000);
 
   Esquerda();
-  delay(1000);
+  delay(800);
 
   Frente();
   delay(2000);
 
   Esquerda();
-  delay(1000);
+  delay(600);
 
   Frente();
   delay(500);
