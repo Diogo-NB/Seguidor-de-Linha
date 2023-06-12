@@ -47,6 +47,9 @@ void setup() {
   pinMode(M2, OUTPUT);
   pinMode(dir1, OUTPUT);
   pinMode(dir2, OUTPUT);
+
+  Serial.begin(19200);
+
   LerUltra();
 }
 
@@ -61,17 +64,19 @@ void loop() {
 
   LerInfras();
 
-  if (SensorDir)
+  if (SensorMid)
+    Frente();
+  else if (SensorDir)
     Direita();
   else if (SensorEsq)
     Esquerda();
-  else if (SensorMid)
-    Frente();
   else {
     Frente();
   }
 
-  delay(100);
+  delayMicroseconds(16383);
+  delayMicroseconds(16383);
+  delayMicroseconds(16383);
 }
 
 /* --- Funções dos sensores Infravermelho ---*/
@@ -79,6 +84,17 @@ void LerInfras() {
   SensorEsq = digitalRead(pin_S3);
   SensorDir = digitalRead(pin_S2);
   SensorMid = digitalRead(pin_S1);
+}
+
+void PrintInfras() {
+  Serial.print("\n\nE   M   D\n");
+  Serial.print(SensorEsq);
+  Serial.print("   ");
+  Serial.print(SensorMid);
+  Serial.print("   ");
+  Serial.print(SensorDir);
+  Serial.print("\nStatus : ");
+  Serial.print(status);
 }
 
 /* --------------- Funções do sensor Ultrassônico ---------------*/
@@ -129,7 +145,6 @@ void Tras2(int velocidade) {
 }
 
 void Parar() {  // Parar ambos os motores
-
   if (status != 0) {
     digitalWrite(M1, LOW);
     digitalWrite(dir1, LOW);
@@ -187,5 +202,3 @@ void Desvia() {
   Frente();
   delay(500);
 }
-
-
