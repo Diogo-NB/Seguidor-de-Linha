@@ -22,13 +22,13 @@ const float VelocidadeSom_mporus = 0.000340;  // em metros por microsegundo
 float DistanciaUltra = 0.0;
 
 // Velocidade padrão dos motores
-const int v_Padrao = 100;
+const int v_Padrao = 90;
 
 // Velocidade padrão para curvas
-const int v_CurvaF = 100;  // Frente
-const int v_CurvaT = 160;  // Tras
+const int v_CurvaF = 90;  // Frente
+const int v_CurvaT = 130;  // Tras
 
-int status = 0;  // 0 - Parado; 1 - Frente; 2 - Esquerda; 3 - Direita
+int status = 0;  // 0 - Parado; 1 - Frente; 2 - Esquerda; 3 - Direita; 4 - Tras
 
 void setup() {
   // Pinos sensores infravermelhos
@@ -179,26 +179,34 @@ void Frente() {
   }
 }
 
+void Tras()
+{
+  if (status != 4){
+    Tras1(v_Padrao);
+    Tras2(v_Padrao);
+    status = 4;
+  }
+}
+
 void Desvia() {
-  Tras1(v_Padrao);
-  Tras2(v_Padrao);
+  Tras();
   delay(500);
 
   Direita();
-  delay(1000);
+  delay(800);
 
   Frente();
-  delay(2000);
+  delay(1500);
 
   Esquerda();
   delay(800);
 
   Frente();
-  delay(2000);
+  delay(1500);
 
   Esquerda();
   delay(600);
 
   Frente();
-  delay(500);
+  delay(900);
 }
