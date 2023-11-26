@@ -18,7 +18,7 @@ public:
     lim_sup = limite_superior;
   }
 
-  void attachPin(int pin){
+  void attachPin(int pin) {
     s.attach(pin);
     s.write(90);
     pos = s.read();
@@ -50,7 +50,6 @@ public:
 
     pos = s.read();
   }
-
 };
 
 Servo s1;  // (esquerda), varia bem entre 120 e 175 ,abaixa, sobe
@@ -58,10 +57,10 @@ Servo s2;  // (direita) varia bem entre 70 e 140, extende, contrai
 Servo s3;  // (base) varia bem entre 30 e 150, anti-horario, horario
 Servo s4;  // (garra) varia bem entre 0 e 90, abre, fecha
 
-Eixo vertical = Eixo(120, 175);
-Eixo horizontal = Eixo(90, 150);
+Eixo vertical = Eixo(85, 100);
+Eixo horizontal = Eixo(90, 180);
 Eixo base = Eixo(30, 150);
-Eixo garra = Eixo(0, 90);
+Eixo garra = Eixo(0, 100);
 
 void setup() {
   vertical.attachPin(pin_eixo_vertical);
@@ -70,6 +69,7 @@ void setup() {
   garra.attachPin(pin_eixo_garra);
 
   Serial.begin(9600);
+  abrirGarra();
 
   delay(500);
 }
@@ -85,24 +85,43 @@ void teste(Eixo e) {
 
 void loop() {
 
-  Serial.print("Testando a base, posição inicial: ");
-  Serial.println(base.pos);
-  Serial.println(base.s.read());
+  // Desce
+  horizontal.movef(horizontal.lim_sup);
+  delay(500);
 
-  teste(base);
+  // Vertical
+  vertical.movef(vertical.lim_sup);
+  delay(500);
+
+  fecharGarra();
+  delay(250);
+
+  // Vertical
+  vertical.movef(vertical.lim_inf);
+  delay(500);
+
+  // Sobe
+  horizontal.movef(horizontal.lim_inf);
+  delay(500);
+
+  // Esquerda
+  base.movef(base.lim_sup);
+  delay(500);
+
+  // Desce
+  horizontal.movef(horizontal.lim_sup);
   delay(500);
 
   abrirGarra();
   delay(500);
-  fecharGarra();
+
+  // Sobe
+  horizontal.movef(horizontal.lim_inf);
   delay(500);
 
-  teste(horizontal);
+  // Centraliza
+  base.movef(100);
   delay(500);
-
-  teste(vertical);
-  delay(500);
-
 }
 
 // Garra - s4
