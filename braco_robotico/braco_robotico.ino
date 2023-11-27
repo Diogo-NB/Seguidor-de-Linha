@@ -5,7 +5,9 @@
 #define pin_eixo_base 11
 #define pin_eixo_garra 12
 
-// Eixo do braço robótico
+#define defaultDelay 500
+
+// Um eixo do braço robótico
 class Eixo {
 public:
   int lim_inf;  // limite_inferior em graus
@@ -13,7 +15,12 @@ public:
   int pos;      // Posição do servo
   Servo s;      // Servo do eixo
 
-  Eixo(int limite_inferior, int limite_superior) {  // Constructor with parameters
+  Eixo(){
+    lim_inf = 0;
+    lim_sup = 180;
+  }
+
+  Eixo(int limite_inferior, int limite_superior) {
     lim_inf = limite_inferior;
     lim_sup = limite_superior;
   }
@@ -52,26 +59,29 @@ public:
   }
 };
 
+/* Declaração dos servos (usado antes de implementar a classe)
 Servo s1;  // (esquerda), varia bem entre 120 e 175 ,abaixa, sobe
 Servo s2;  // (direita) varia bem entre 70 e 140, extende, contrai
 Servo s3;  // (base) varia bem entre 30 e 150, anti-horario, horario
 Servo s4;  // (garra) varia bem entre 0 e 90, abre, fecha
+*/
 
-Eixo vertical = Eixo(85, 100);
-Eixo horizontal = Eixo(90, 180);
-Eixo base = Eixo(30, 150);
-Eixo garra = Eixo(0, 100);
+// Criação dos eixos
+Eixo vertical = Eixo(85, 100);    // (esquerda), varia bem entre 85 e 100 ,abaixa, sobe
+Eixo horizontal = Eixo(90, 180);  // (direita) varia bem entre 90 e 180, extende, contrai
+Eixo base = Eixo(30, 150);        // (base) varia bem entre 30 e 150, anti-horario, horario
+Eixo garra = Eixo(0, 100);        // (garra) varia bem entre 0 e 100, abre, fecha
 
 void setup() {
+  // Setando os pinos para os eixos
   vertical.attachPin(pin_eixo_vertical);
   horizontal.attachPin(pin_eixo_horizontal);
   base.attachPin(pin_eixo_base);
   garra.attachPin(pin_eixo_garra);
 
-  Serial.begin(9600);
+  // Inicializando os eixos
   abrirGarra();
-
-  delay(500);
+  base.movef(100); // Centraliza
 }
 
 void teste(Eixo e) {
@@ -86,54 +96,51 @@ void teste(Eixo e) {
 void loop() {
 
   // Desce
-  horizontal.movef(horizontal.lim_sup);
-  delay(500);
+  horizontal.movef(150);
+  delay(defaultDelay);
 
   // Vertical
   vertical.movef(vertical.lim_sup);
-  delay(500);
+  delay(defaultDelay);
 
   fecharGarra();
-  delay(250);
 
   // Vertical
   vertical.movef(vertical.lim_inf);
-  delay(500);
+  delay(defaultDelay);
 
   // Sobe
   horizontal.movef(horizontal.lim_inf);
-  delay(500);
+  delay(defaultDelay);
 
-  // Esquerda
-  base.movef(base.lim_sup);
-  delay(500);
+  // Base - Direita
+  base.movef(base.lim_inf);
+  delay(defaultDelay);
 
   // Desce
-  horizontal.movef(horizontal.lim_sup);
-  delay(500);
+  horizontal.movef(150);
+  delay(defaultDelay);
 
   abrirGarra();
-  delay(500);
 
   // Sobe
   horizontal.movef(horizontal.lim_inf);
-  delay(500);
+  delay(defaultDelay);
 
   // Centraliza
   base.movef(100);
-  delay(500);
+  delay(defaultDelay);
 }
 
-// Garra - s4
+// Eixo garra
 void abrirGarra() {
   garra.movef(garra.lim_inf);
-  delay(500);
+  delay(defaultDelay);
 }
 
-// Garra - s4
 void fecharGarra() {
   garra.movef(garra.lim_sup);
-  delay(500);
+  delay(defaultDelay);
 }
 
 void move(Servo s, int from, int to) {
